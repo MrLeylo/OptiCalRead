@@ -1,6 +1,0 @@
-
-
-def u2t(filenom):
-	file=open(filenom,"r")
-	linea='o'
-	
