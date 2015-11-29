@@ -58,7 +58,7 @@ def ponderateByConcentration():
 	sdFile.close()
 	totDevs={}
 	for feature in standevs:
-		totDevs[feature]=sum(standevs[feature])/len(standevs[feature])
+		totDevs[feature]=sum([abs(standevs[feature][si]) for si in range(len(standevs[feature]))])/len(standevs[feature])
 	print totDevs
 	localF=['turningAngle','turningAngleDifference','Coord','LP']
 	globalF=['accAngle','coG','relStrokeLength','liS','quadraticError']
