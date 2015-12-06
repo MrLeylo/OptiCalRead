@@ -149,6 +149,46 @@ class Symbol(object):
 				di=spp.dista(self.Coord[ini+1,0],self.Coord[ini+1,1],self.Coord[self.tE[i],0],self.Coord[self.tE[i],1],self.Coord[j,0],self.Coord[j,1])
 				suma=suma+(di**2)
 			self.quadraticError[i]=suma/(self.tE[i]-ini)
+			
+	
+	
+	def setRegions(self,scKind,projKind):
+		width=self.bBox[1]-self.bBox[0]
+		height=self.bBox[3]-self.bBox[2]
+		self.outbBox=[self.bBox[0]-(width/2),self.bBox[1]+(width/2),self.bBox[2]-(height/2),self.bBox[3]+(height/2)]
+		if projKind=='cent':
+			self.centroid=[self.center[0],self.bBox[2]+(0.5*height)]
+			sup=self.bBox[2]+(0.2*height)
+			sub=self.bBox[2]+(0.8*height)
+		elif projKind=='asc':
+			self.centroid=[self.center[0],self.bBox[2]+(0.66*height)]
+			sup=self.bBox[2]+(0.2*height)
+			sub=self.bBox[2]+(0.8*height)
+		elif projKind=='desc':
+			self.centroid=[self.center[0],self.bBox[2]+(0.33*height)]
+			sup=self.bBox[2]+(0.1*height)
+			sub=self.bBox[2]+(0.4*height)
+		if scKind=='nosc':
+			self.rightOut=self.outbBox[1]+(2.5*width)
+		elif scKind=='supsc':
+			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.superThresh=sup
+		elif scKind=='sc':
+			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.superThresh=sup
+			self.subThresh=sub
+		elif scKind=='slik':
+			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.superThresh=sup
+			self.subThresh=sub
+		elif scKind=='llik':
+			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.subThresh=sub
+		elif scKind=='rlik':
+			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.superThresh=sup
+		elif scKind=='blik':
+			self.rightOut=self.outbBox[1]+(1.5*width)
 	
 
 
