@@ -15,21 +15,19 @@ import elasticMatching as eM
 import pytemplate as temp
 import featurePonderation as fp
 
-
+#Sistema sencer, llegeix nom del fitxer inkml a analitzar i retorna l'expressio (ex: overAll.py fitxerAClassificar.inkml)
 
 filenom=sys.argv[1]		#Llegir el nom del fitxer InkML de la consola
 Coord=ink2Traces.i2t(filenom)		#Extreure les coordenades donades pel fitxer
 img,byAxis,difs=drawTraces.draw(Coord)		#Mostrar resultat obtingut i montar imatge
 Symb,groupedStrokes=fileSeg.segment(Coord,byAxis,difs)		#Agrupar traces en simbols
-Symb=drawRegions.drawS(Symb)
-#bBoxes,centers=drawRegions.draw(Symb)		#Busca la bounding box i el centre de cada simbol
-symbols=spp.preprocessing(Symb)#,bBoxes,centers)
+Symb=drawRegions.drawS(Symb)		#Buscar la bounding box i el centre de cada simbol
+Symb=spp.preprocessing(Symb)		#Preprocessar tots els simbols
 #repS.repr([symbols[3]])
-for i in range(len(symbols)):
-	symbols[i].computeFeatures()
-	#pprint(vars(symbols[i]))
-symboldB,tagClassification,averages=temp.readTemplate()
-genTags={}
+for i in range(len(Symb)):
+	Symb[i].computeFeatures()		#Calcular les features de cada simbol
+symboldB,tagClassification,averages=temp.readTemplate()		#Llegeix la base de dades per extreure tots els simbols etiquetats, totes les mostres ordenades per caracter(etiqueta) i el template de cada caracter
+genTags={}		#Busca el significat independent de cada caracter i si la proporcio del caracter respecte el significat independent es molt baixa ho considera soroll i elimina el caracter
 for character in tagClassification:
 	if character[:-1] not in genTags:
 		genTags[character[:-1]]=[]
@@ -39,16 +37,8 @@ for onlySym in genTags:
 		if genTags[onlySym][i][1]<0.05*sum([genTags[onlySym][caseID][1] for caseID in range(len(genTags[onlySym]))]):
 			del tagClassification[genTags[onlySym][i][0]]
 			del averages[genTags[onlySym][i][0]]
-#[averages[car].computeFeatures() for car in averages]
-weights=fp.ponderateByConcentration()
-for i in range(len(symbols)):
+weights=fp.ponderateByConcentration()		#Aplica una ponderacio per concentracio a les features
+for i in range(len(symbols)):		#Per cada simbol a analitzar li assigna un caracter
 	decision=eM.elasticMatching(averages,symbols[i],weights)
 	print decision
-plt.figure(5)
-for j in range(len(tagClassification[decision][0].tE)):
-	if j==0:
-		ini=-1
-	else:
-		ini=int(tagClassification[decision][0].tE[j-1])
-	plt.plot(averages[decision].Coord[range(ini+1,int(tagClassification[decision][0].tE[j])+1),0],-averages[decision].Coord[range(ini+1,int(tagClassification[decision][0].tE[j])+1),1],'r')
 plt.show()

@@ -80,13 +80,12 @@ def i2t(filenom):
 	file.close()
 	return coordinates
 	
+#
 
 def i2trained(filenom,etiq):
 	linea="o"
 	file=open(filenom,"r")
-	#print filenom
 	coordinates=[]
-	#contador=0
 	traceEndsAsList=[]
 	# Llegeix les linies del fitxer fins que acaben
 	while linea!="":
@@ -94,7 +93,6 @@ def i2trained(filenom,etiq):
 		isTraceIn=search4Trace(linea,"in")
 		# Si s'inicia una trace nova incrementa el comptador de traces i busca el final de la trace
 		if isTraceIn:
-			#contador=contador+1
 			isTraceOut=search4Trace(linea,"out")
 			#Si a la mateixa linea s'acaba es guarda la linea fins on detecta el final
 			if isTraceOut:
@@ -124,23 +122,9 @@ def i2trained(filenom,etiq):
 			coordinatesAr=[]
 			for dob in range(len(precoordinateLines)/2):
 				coordinatesAr.append([float(precoordinateLines[dob*2]),float(precoordinateLines[(dob*2)+1])])
-			#Ajusta la matriu de coordenades segons la longitud que va trobant en les traces (expandeix si la nova trace es mes llarga que les anteriors)
-			#if ((len(coordinatesAr)+1)/2)>coordinates.shape[1]:
-				#difer=((len(coordinatesAr)+1)/2)-coordinates.shape[1]
-			#else:
-				#difer=0
-			#if contador==1:
-				#expansio=0
-			#else:
-				#expansio=1
 			coordinates.extend(coordinatesAr)
 			traceEndsAsList.append(len(coordinates)-1)
-			#Omple la matriu de coordenades
-			#c=0
-			#for i in range((len(coordinatesAr)+1)/2):
-				#for j in range(2):
-					#coordinates[coordinates.shape[0]-1,i,j]=coordinatesAr[c]
-					#c=c+1
+	#Monta els simbols amb els trace ends corresponents
 	traceEnds=np.asarray(traceEndsAsList,np.float64)
 	coordin=np.asarray(coordinates,np.float64)
 	symbtag=SClass.taggedSymbol(coordin,traceEnds,etiq)
