@@ -189,7 +189,12 @@ class Symbol(object):
 			self.superThresh=sup
 		elif scKind=='blik':
 			self.rightOut=self.outbBox[1]+(1.5*width)
+		self.kinds=[scKind,projKind]
 	
+	
+	def tagUntagged(self,tag,sNum):
+		self.tag=tag
+		self.ref=sNum
 
 
 class taggedSymbol(Symbol):
