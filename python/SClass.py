@@ -155,14 +155,15 @@ class Symbol(object):
 	def setRegions(self,scKind,projKind):
 		width=self.bBox[1]-self.bBox[0]
 		height=self.bBox[3]-self.bBox[2]
-		self.outbBox=[self.bBox[0]-(width/2),self.bBox[1]+(width/2),self.bBox[2]-(height/2),self.bBox[3]+(height/2)]
+		big=max(width,height)
+		self.outbBox=[self.bBox[0]-(big/2.0),self.bBox[1]+(big/2.0),self.bBox[2]-(big/2.0),self.bBox[3]+(big/2.0)]
 		if projKind=='cent':
 			self.centroid=[self.center[0],self.bBox[2]+(0.5*height)]
 			sup=self.bBox[2]+(0.2*height)
-			sub=self.bBox[2]+(0.8*height)
+			sub=self.bBox[2]+(0.75*height)
 		elif projKind=='asc':
 			self.centroid=[self.center[0],self.bBox[2]+(0.66*height)]
-			sup=self.bBox[2]+(0.2*height)
+			sup=self.bBox[2]+(0.33*height)
 			sub=self.bBox[2]+(0.8*height)
 		elif projKind=='desc':
 			self.centroid=[self.center[0],self.bBox[2]+(0.33*height)]
