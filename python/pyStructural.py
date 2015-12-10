@@ -46,18 +46,22 @@ def expreBuilder(symbols,tag):
 		for candSNum in range(len(symbols)):
 			if curSNum!=candSNum:
 				if symbols[curSNum].kinds[0]=='blik':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].outbBox[0]:
+					if symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0]:
 						if symbols[candSNum].centroid[0]<symbols[curSNum].centroid[0]:
 							dominations.append(dom.hardDomination('above',symbols[curSNum],symbols[candSNum]))
 						else:
 							dominations.append(dom.hardDomination('below',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='supsc':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and ((symbols[curSNum].bBox[1]-symbols[curSNum].bBox[0])*(symbols[curSNum].bBox[3]-symbols[curSNum].bBox[2]))>((symbols[candSNum].bBox[1]-symbols[candSNum].bBox[0])*(symbols[candSNum].bBox[3]-symbols[candSNum].bBox[2])):
+					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2]:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='sc':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and ((symbols[curSNum].bBox[1]-symbols[curSNum].bBox[0])*(symbols[curSNum].bBox[3]-symbols[curSNum].bBox[2]))>((symbols[candSNum].bBox[1]-symbols[candSNum].bBox[0])*(symbols[candSNum].bBox[3]-symbols[candSNum].bBox[2])):
+					if symbols[curSNum].tag[:-1]=='b':
+						auxMarker=symbols[curSNum].center[0]
+					else:
+						auxMarker=symbols[curSNum].bBox[1]
+					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>auxMarker and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2]:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
-					elif symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].subThresh and symbols[candSNum].centroid[1]<symbols[curSNum].outbBox[3] and ((symbols[curSNum].bBox[1]-symbols[curSNum].bBox[0])*(symbols[curSNum].bBox[3]-symbols[curSNum].bBox[2]))>((symbols[candSNum].bBox[1]-symbols[candSNum].bBox[0])*(symbols[candSNum].bBox[3]-symbols[candSNum].bBox[2])):
+					elif symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].subThresh and symbols[candSNum].centroid[1]<symbols[curSNum].outbBox[3]:
 						dominations.append(dom.hardDomination('subscript',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='slik':
 					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].outbBox[0] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh:
@@ -67,17 +71,18 @@ def expreBuilder(symbols,tag):
 					elif symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].superThresh and symbols[candSNum].centroid[1]<symbols[curSNum].subThresh:
 						dominations.append(dom.hardDomination('inside',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='llik':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and ((symbols[curSNum].bBox[1]-symbols[curSNum].bBox[0])*(symbols[curSNum].bBox[3]-symbols[curSNum].bBox[2]))>((symbols[candSNum].bBox[1]-symbols[candSNum].bBox[0])*(symbols[candSNum].bBox[3]-symbols[candSNum].bBox[2])):
+					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
 					elif symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].outbBox[0] and symbols[candSNum].centroid[1]>symbols[curSNum].subThresh:
 						dominations.append(dom.hardDomination('below',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='rlik':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and ((symbols[curSNum].bBox[1]-symbols[curSNum].bBox[0])*(symbols[curSNum].bBox[3]-symbols[curSNum].bBox[2]))>((symbols[candSNum].bBox[1]-symbols[candSNum].bBox[0])*(symbols[candSNum].bBox[3]-symbols[candSNum].bBox[2])):
+					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2]:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
 					elif symbols[candSNum].centroid[0]>symbols[curSNum].outbBox[0] and symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2]:
 						dominations.append(dom.hardDomination('above',symbols[curSNum],symbols[candSNum]))
 					elif symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].bBox[2] and symbols[candSNum].centroid[1]<symbols[curSNum].bBox[3]:
 						dominations.append(dom.hardDomination('inside',symbols[curSNum],symbols[candSNum]))
+	print [[do.dominant.tag[:-1],do.submissive.tag[:-1]] for do in dominations]
 	for curSNum in range(len(symbols)):
 		noSoft=True
 		canGoOn=True
@@ -96,7 +101,12 @@ def expreBuilder(symbols,tag):
 					dominations.append(dom.softDomination('rightNeigh',symbols[curSNum],symbols[c]))
 					noSoft=False
 				else:
-					canGoOn==False
+					if [symbols[curSNum].ref,dominators[0]] in [[doi.dominant.ref,doi.submissive.ref] for doi in dominations]:
+						del dominations[[[doi.dominant.ref,doi.submissive.ref] for doi in dominations].index([symbols[curSNum].ref,dominators[0]])]
+						dominations.append(dom.softDomination('rightNeigh',symbols[curSNum],symbols[c]))
+						noSoft=False
+					else:
+						canGoOn=False
 				del dominators
 			c+=1
 	print [[do.dominant.tag[:-1],do.submissive.tag[:-1]] for do in dominations]
@@ -153,7 +163,7 @@ def expreBuilder(symbols,tag):
 	print sdomsList
 	fullSons=copy.deepcopy(dominantBaseline)
 	c=0
-	print fullSons
+	print [[do.dominant.tag[:-1],do.submissive.tag[:-1]] for do in dominations]
 	while len(fullSons)!=0:
 		currentLine=copy.deepcopy(fullSons)
 		fullSons=[]
@@ -164,7 +174,7 @@ def expreBuilder(symbols,tag):
 					if len(dominates(dBlSym,dominations,'soft'))!=0:
 						grandsons=dominates(son,dominations,'soft')
 						for grandson in grandsons:
-							if [symbols[dBlSym].ref,symbols[grandson].ref,dominations[hdomsList[[hdomsList[do][1] for do in range(len(hdomsList))].index(son)][2]].typedom] not in [[domina.dominant.ref,domina.submissive.ref,domina.typedom] for domina in dominations] and ((symbols[dBlSym].bBox[1]-symbols[dBlSym].bBox[0])*(symbols[dBlSym].bBox[3]-symbols[dBlSym].bBox[2]))>((symbols[grandson].bBox[1]-symbols[grandson].bBox[0])*(symbols[grandson].bBox[3]-symbols[grandson].bBox[2])):
+							if [symbols[dBlSym].ref,symbols[grandson].ref,dominations[hdomsList[[hdomsList[do][1] for do in range(len(hdomsList))].index(son)][2]].typedom] not in [[domina.dominant.ref,domina.submissive.ref,domina.typedom] for domina in dominations]:
 								#print [symbols[dBlSym],symbols[grandson],dominations[hdomsList[[hdomsList[do][1] for do in range(len(hdomsList))].index(son)][2]].typedom]
 								dominations.append(dom.hardDomination(dominations[hdomsList[[hdomsList[do][1] for do in range(len(hdomsList))].index(son)][2]].typedom,symbols[dBlSym],symbols[grandson]))
 					parents=[]
@@ -179,7 +189,8 @@ def expreBuilder(symbols,tag):
 							del dominations[grandParent[2]]
 							c+=1
 				fullSons.extend(sons)
-	print [[do.dominant.tag[:-1],do.submissive.tag[:-1]] for do in dominations]
+		
+	print [[do.dominant.tag[:-1],do.dominant.ref,do.submissive.tag[:-1],do.submissive.ref] for do in dominations]
 	expression=dominations
 	return expression
 	

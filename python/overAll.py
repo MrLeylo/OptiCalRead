@@ -38,7 +38,7 @@ for onlySym in genTags:
 			del tagClassification[genTags[onlySym][i][0]]
 			del averages[genTags[onlySym][i][0]]
 weights=fp.ponderateByConcentration()		#Aplica una ponderacio per concentracio a les features
-for i in range(len(symbols)):		#Per cada simbol a analitzar li assigna un caracter
-	decision=eM.elasticMatching(averages,symbols[i],weights)
+for i in range(len(Symb)):		#Per cada simbol a analitzar li assigna un caracter
+	decision=eM.elasticMatching(averages,Symb[i],weights)
 	print decision
 plt.show()
