@@ -156,7 +156,7 @@ class Symbol(object):
 		width=self.bBox[1]-self.bBox[0]
 		height=self.bBox[3]-self.bBox[2]
 		big=max(width,height)
-		self.outbBox=[self.bBox[0]-(big/2.0),self.bBox[1]+(big/2.0),self.bBox[2]-(big/2.0),self.bBox[3]+(big/2.0)]
+		self.outbBox=[self.bBox[0]-big,self.bBox[1]+big,self.bBox[2]-big,self.bBox[3]+big]
 		if projKind=='cent':
 			self.centroid=[self.center[0],self.bBox[2]+(0.5*height)]
 			sup=self.bBox[2]+(0.2*height)
