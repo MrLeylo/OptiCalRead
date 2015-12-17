@@ -191,11 +191,43 @@ class Symbol(object):
 		elif scKind=='blik':
 			self.rightOut=self.outbBox[1]+(1.5*width)
 		self.kinds=[scKind,projKind]
-	
+		
+	def addSupsc(self,slist):
+		self.superscripts=slist
+		
+	def addSubsc(self,slist):
+		self.subscripts=slist
+		
+	def addAb(self,slist):
+		self.aboves=slist
+		
+	def addBe(self,slist):
+		self.belows=slist
+		
+	def addIns(self,slist):
+		self.containing=slist	
 	
 	def tagUntagged(self,tag,sNum):
 		self.tag=tag
 		self.ref=sNum
+		
+	def reTag(self):
+		if self.tag[:-1]=='\div':
+			self.texTag='\\'+'frac'
+		elif self.tag[:-1]=='\ldots':
+			self.texTag='\colon'
+		elif self.tag[:-1]=='.':
+			self.texTag='\cdotp'
+		elif self.tag[:-1]=='\COMMA':
+			self.texTag=','
+		elif self.tag[:-1]=='\!':
+			self.texTag='!'
+		elif self.tag[:-1]=='\gt':
+			self.texTag='>'
+		elif self.tag[:-1]=='\lt':
+			self.texTag='<'
+		else:
+			self.texTag=self.tag[:-1]
 
 
 class taggedSymbol(Symbol):

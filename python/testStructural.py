@@ -7,7 +7,7 @@ import drawTraces
 import fileSeg
 import drawRegions
 import matplotlib.pyplot as plt
-test=3
+test=4
 if test==1:
 	testCase=[nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0])]
 	testCase[0].bBox=[0.75,4,1,3.5]
@@ -33,9 +33,12 @@ if test==1:
 		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[1]],[-testCase[ntc].bBox[2],-testCase[ntc].bBox[3]],'r-')
 		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[3]],'r-')
 		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[2]],'r-')
-	plt.show()
+	#plt.show()
 	tags=['\sum1','n1','i2','01','=2','(1','x2','21','x2','i2','+2','y1','21','y1','i2',')1']
-	print stru.expreBuilder(testCase,tags)
+	dominations,laTexExpr= stru.expreBuilder(testCase,tags)
+	plt.figure(5)
+	plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
+	plt.show()
 elif test==2:
 	filenom=sys.argv[1]		#Llegir el nom del fitxer InkML de la consola
 	Coord=ink2Traces.i2t(filenom)		#Extreure les coordenades donades pel fitxer
@@ -50,7 +53,9 @@ elif test==2:
 		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[3]],'r-')
 		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[2]],'r-')
 	tags=['a1','21','+2','b1','21','\div1','a1','+2','b1','+2','\div1','b1','21','+2','c1','21','b1','+2','c1','+2','\div1','c1','21','+2','a1','21','c1','+2','a1','\gt1','-1','a1','+2','b1','+2','c1']
-	print stru.expreBuilder(testCase,tags)
+	dominations,laTexExpr= stru.expreBuilder(testCase,tags)
+	plt.figure(5)
+	plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
 	plt.show()
 elif test==3:
 	filenom=sys.argv[1]		#Llegir el nom del fitxer InkML de la consola
@@ -66,5 +71,43 @@ elif test==3:
 		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[3]],'r-')
 		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[2]],'r-')
 	tags=['(1','A2','-1','B1',')1','\\'+'times2','C1','-1','-1','(1','A3','\\'+'times2','C1',')1','-1','(1','B2','\\'+'times2','C1',')1']
-	print stru.expreBuilder(testCase,tags)
+	dominations,laTexExpr= stru.expreBuilder(testCase,tags)
+	plt.figure(5)
+	plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
+	plt.show()
+elif test==4:
+	filenom=sys.argv[1]		#Llegir el nom del fitxer InkML de la consola
+	Coord=ink2Traces.i2t(filenom)		#Extreure les coordenades donades pel fitxer
+	img,byAxis,difs=drawTraces.draw(Coord)		#Mostrar resultat obtingut i montar imatge
+	Symb,groupedStrokes=fileSeg.segment(Coord,byAxis,difs)		#Agrupar traces en simbols
+	Symb=drawRegions.drawS(Symb)
+	testCase=Symb
+	plt.figure(4)
+	for ntc in range(len(testCase)):
+		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[1]],[-testCase[ntc].bBox[2],-testCase[ntc].bBox[2]],'r-')
+		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[1]],[-testCase[ntc].bBox[2],-testCase[ntc].bBox[3]],'r-')
+		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[3]],'r-')
+		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[2]],'r-')
+	tags=['(1','31','81','\\'+'times2','(1','21','81','-1','11','21','61',')1',')1','-1','72','01','\lt1','-1','-1','31','72','91','31']
+	dominations,laTexExpr= stru.expreBuilder(testCase,tags)
+	plt.figure(5)
+	plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
+	plt.show()
+elif test==5:
+	filenom=sys.argv[1]		#Llegir el nom del fitxer InkML de la consola
+	Coord=ink2Traces.i2t(filenom)		#Extreure les coordenades donades pel fitxer
+	img,byAxis,difs=drawTraces.draw(Coord)		#Mostrar resultat obtingut i montar imatge
+	Symb,groupedStrokes=fileSeg.segment(Coord,byAxis,difs)		#Agrupar traces en simbols
+	Symb=drawRegions.drawS(Symb)
+	testCase=Symb
+	plt.figure(4)
+	for ntc in range(len(testCase)):
+		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[1]],[-testCase[ntc].bBox[2],-testCase[ntc].bBox[2]],'r-')
+		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[1]],[-testCase[ntc].bBox[2],-testCase[ntc].bBox[3]],'r-')
+		plt.plot([testCase[ntc].bBox[1],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[3]],'r-')
+		plt.plot([testCase[ntc].bBox[0],testCase[ntc].bBox[0]],[-testCase[ntc].bBox[3],-testCase[ntc].bBox[2]],'r-')
+	tags=['\phi1','21','21','=2','\phi1','21','11']
+	dominations,laTexExpr= stru.expreBuilder(testCase,tags)
+	plt.figure(5)
+	plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
 	plt.show()

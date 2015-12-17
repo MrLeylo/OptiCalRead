@@ -1,13 +1,14 @@
 import pytemplate as temp
 import pyDom as dom
 import copy
+import SClass as nsi
 
 def expreBuilder(symbols,tag):
 	auxL=zip(symbols,tag)
 	zs=sorted(auxL,key=lambda x: x[0].bBox[0])
 	symbols,tag=map(list,zip(*zs))
 	#symbolTypeCatalog={'nonscripted':[['+','-','x','X','\\'+'times','/','=','\\'+'neq','\gt','\geq','\lt','\leq','\ldots','.','COMMA','!','\exists','\in','\\'+'forall','\\'+'rightarrow','(','[','\{','\infty']],'superscripted':[['\sin','\cos','\\'+'tan','\log','e','\pi'],['0','1','2','3','4','5','6','7','8','9']],'scripted':[['a','c','e','i','m','n','r','x','z','A','B','C','F','X','Y','\\'+'alpha','\\'+'beta','\gamma','\\'+'theta','\phi','\pm',')',']','\}','\\'+'times'],['b','d','f','k','t'],['g','j','p','y']],'sumlike':[['\sum','\pi','\\'+'int']],'limlike':[['\lim']],'rootlike':[['\sqrt']],'barlike':[['\div']]}
-	symbolTypeCatalog={'nonscripted':[['+','-','\\'+'times','/','=','\\'+'neq','\gt','\geq','\lt','\leq','\ldots','.','COMMA','!','\exists','\in','\\'+'forall','\\'+'rightarrow','(','[','\{','\infty']],'superscripted':[['\sin','\cos','\\'+'tan','\log','e','\pi'],['0','1','2','3','4','5','6','7','8','9']],'scripted':[['a','c','e','i','m','n','r','x','z','A','B','C','F','X','Y','\\'+'alpha','\\'+'beta','\gamma','\\'+'theta','\phi','\pm',')',']','\}','\\'+'times'],['b','d','f','k','t'],['g','j','p','y']],'sumlike':[['\sum','\pi','\\'+'int']],'limlike':[['\lim']],'rootlike':[['\sqrt']],'barlike':[['\div']]}
+	symbolTypeCatalog={'nonscripted':[['+','-','\\'+'times','/','=','\\'+'neq','\gt','\geq','\lt','\leq','\ldots','.','COMMA','!','\exists','\in','\\'+'forall','\\'+'rightarrow','(','[','\{','\infty']],'superscripted':[['\sin','\cos','\\'+'tan','\log','e','\pi'],['0','1','2','3','4','5','6','7','8','9']],'scripted':[['a','c','e','i','m','n','r','x','z','A','B','C','F','X','Y','\\'+'alpha','\\'+'beta','\gamma','\\'+'theta','\phi','\pm',')',']','\}'],['b','d','f','k','t','\\'+'int'],['g','j','p','y']],'sumlike':[['\sum','\pi']],'limlike':[['\lim']],'rootlike':[['\sqrt']],'barlike':[['\div']]}
 	for sNum in range(len(symbols)):
 		symbols[sNum].tagUntagged(tag[sNum],sNum)
 		if tag[sNum][:-1] not in [v1 for vx in [v2 for vy in symbolTypeCatalog.values() for v2 in vy] for v1 in vx]:
@@ -41,7 +42,6 @@ def expreBuilder(symbols,tag):
 			symbol.bBox[2]=symbol.center[1]-((symbol.bBox[1]-symbol.bBox[0])/2)
 			symbol.bBox[3]=symbol.center[1]+((symbol.bBox[1]-symbol.bBox[0])/2)
 	dominations=[]
-	print symbols[6].outbBox,',',symbols[6].bBox,',',symbols[6].tag,',',symbols[8].centroid
 	for curSNum in range(len(symbols)):
 		for candSNum in range(len(symbols)):
 			if curSNum!=candSNum:
@@ -52,16 +52,13 @@ def expreBuilder(symbols,tag):
 						else:
 							dominations.append(dom.hardDomination('below',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='supsc':
-					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and symbols[candSNum].bBox[3]<symbols[curSNum].bBox[3]:
+					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and symbols[candSNum].bBox[3]<symbols[curSNum].bBox[3]:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='sc':
-					if symbols[curSNum].tag[:-1]=='b':
-						auxMarker=symbols[curSNum].center[0]
-					else:
-						auxMarker=symbols[curSNum].bBox[1]
+					auxMarker=symbols[curSNum].bBox[0]
 					if symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>auxMarker and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh and symbols[candSNum].centroid[1]>symbols[curSNum].outbBox[2] and symbols[candSNum].bBox[3]<symbols[curSNum].bBox[3]:
 						dominations.append(dom.hardDomination('superscript',symbols[curSNum],symbols[candSNum]))
-					elif symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].subThresh and symbols[candSNum].centroid[1]<symbols[curSNum].outbBox[3] and symbols[candSNum].bBox[2]>symbols[curSNum].bBox[2]:
+					elif symbols[candSNum].centroid[0]<symbols[curSNum].outbBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[1]>symbols[curSNum].subThresh and symbols[candSNum].centroid[1]<symbols[curSNum].outbBox[3] and symbols[candSNum].bBox[2]>symbols[curSNum].bBox[2]:
 						dominations.append(dom.hardDomination('subscript',symbols[curSNum],symbols[candSNum]))
 				elif symbols[curSNum].kinds[0]=='slik':
 					if symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[1]<symbols[curSNum].superThresh:
@@ -224,9 +221,9 @@ def expreBuilder(symbols,tag):
 			for ele in range(len(domdic[tip])-1):
 				if symbols[domdic[tip][ele]].ref not in gone:
 					if [domdic[tip][ele],domdic[tip][ele+1],'rightNeigh'] not in [[doi.dominant.ref,doi.submissive.ref,doi.typedom] for doi in dominations]:
-						while symbols[domdic[tip][ele+1]].ref in [doim.submissive.ref for doim in dominations]:
-							del dominations[[doim.submissive.ref for doim in dominations].index(symbols[domdic[tip][ele+1]].ref)]
 						if symbols[domdic[tip][ele+1]].centroid[1]<symbols[domdic[tip][ele]].bBox[2] and symbols[domdic[tip][ele]].kinds[0]!='blik' and symbols[domdic[tip][ele]].kinds[0]!='nosc':							
+							while symbols[domdic[tip][ele+1]].ref in [doim.submissive.ref for doim in dominations]:
+								del dominations[[doim.submissive.ref for doim in dominations].index(symbols[domdic[tip][ele+1]].ref)]
 							if symbols[domdic[tip][ele+1]].centroid[0]>symbols[domdic[tip][ele]].bBox[1]:
 								if symbols[domdic[tip][ele]].kinds[0]=='slik':
 									dominations.append(dom.hardDomination('above',symbols[domdic[tip][ele]],symbols[domdic[tip][ele+1]]))
@@ -238,6 +235,8 @@ def expreBuilder(symbols,tag):
 								else:
 									dominations.append(dom.hardDomination('superscript',symbols[domdic[tip][ele]],symbols[domdic[tip][ele+1]]))
 						elif symbols[domdic[tip][ele+1]].centroid[1]>symbols[domdic[tip][ele]].bBox[3] and (symbols[domdic[tip][ele]].kinds[0]=='sc' or symbols[domdic[tip][ele]].kinds[0]=='slik' or symbols[domdic[tip][ele]].kinds[0]=='llik'):
+							while symbols[domdic[tip][ele+1]].ref in [doim.submissive.ref for doim in dominations]:
+								del dominations[[doim.submissive.ref for doim in dominations].index(symbols[domdic[tip][ele+1]].ref)]
 							if symbols[domdic[tip][ele]].kinds[0]=='sc':
 								dominations.append(dom.hardDomination('subscript',symbols[domdic[tip][ele]],symbols[domdic[tip][ele+1]]))
 							else:
@@ -304,8 +303,41 @@ def expreBuilder(symbols,tag):
 				del dominations[[[doim.dominant.ref,doim.submissive.ref] for doim in dominations].index([sIn,following[len(following)-1]])]
 			del following[len(following)-1]
 	print [[do.dominant.tag[:-1],do.dominant.ref,do.submissive.tag[:-1],do.submissive.ref,do.typedom] for do in dominations]	
-	expression=dominations
-	return expression
+	auxiliarSyms=[s.ref for s in symbols]
+	print auxiliarSyms
+	while len(auxiliarSyms)!=0:
+		cs=0
+		yetNotDone=True
+		print 'De moment:'
+		print auxiliarSyms
+		while cs!=len(auxiliarSyms) and yetNotDone:
+			sons=dominates(auxiliarSyms[cs],dominations,'hard')
+			print sons
+			if all(son not in auxiliarSyms for son in sons):
+				print auxiliarSyms[cs]
+				yetNotDone=False
+				domines={}
+				for son in sons:
+					tip=dominations[[[doi.dominant.ref,doi.submissive.ref] for doi in dominations].index([auxiliarSyms[cs],son])].typedom
+					if tip not in domines:
+						domines[tip]=[]
+					domines[tip].append(symbols[son])
+				symbols[auxiliarSyms[cs]]=symbolFamily(symbols[auxiliarSyms[cs]],domines)
+				del auxiliarSyms[cs]
+			cs+=1
+	expression=''
+	for dblIn in dominantBaseline:
+		expression+=getTex(symbols[dblIn])
+	#while '\\' in expression:
+	#	print expression
+	#	print 'a'+expression
+	#	print buea
+	#	expression=expression[:expression.index('\\')+1]+expression[expression.index('\\')+2:]
+	#	print 'to:'+expression
+	#	print buea
+	print [[doi.dominant.ref,doi.submissive.ref,doi.typedom] for doi in dominations]
+	print expression
+	return dominations,expression
 	
 def dominates(father,doms,td):
 	sons=[]
@@ -317,3 +349,121 @@ def dominates(father,doms,td):
 		if domin.dominant.ref==father and isinstance(domin,tip):
 			sons.append(domin.submissive.ref)
 	return sons
+	
+def symbolFamily(symbol,symbolDomines):
+	if symbol.kinds[0]=='supsc':
+		if 'superscript' in symbolDomines:
+			symbol.addSupsc(symbolDomines['superscript'])
+	elif symbol.kinds[0]=='sc':
+		if 'superscript' in symbolDomines:
+			symbol.addSupsc(symbolDomines['superscript'])
+		if 'subscript' in symbolDomines:
+			symbol.addSubsc(symbolDomines['subscript'])
+	elif symbol.kinds[0]=='slik':
+		if 'above' in symbolDomines:
+			symbol.addAb(symbolDomines['above'])
+		if 'below' in symbolDomines:
+			symbol.addBe(symbolDomines['below'])
+		if 'inside' in symbolDomines:
+			symbol.addIns(symbolDomines['inside'])
+	elif symbol.kinds[0]=='llik':
+		if 'superscript' in symbolDomines:
+			symbol.addSupsc(symbolDomines['superscript'])
+		if 'below' in symbolDomines:
+			symbol.addBe(symbolDomines['below'])
+	elif symbol.kinds[0]=='rlik':
+		if 'superscript' in symbolDomines:
+			symbol.addSupsc(symbolDomines['superscript'])
+		if 'below' in symbolDomines:
+			symbol.addBe(symbolDomines['below'])
+		if 'inside' in symbolDomines:
+			symbol.addIns(symbolDomines['inside'])
+	elif symbol.kinds[0]=='blik':
+		if 'above' in symbolDomines:
+			symbol.addAb(symbolDomines['above'])
+		if 'below' in symbolDomines:
+			symbol.addBe(symbolDomines['below'])
+	return symbol
+	
+def getTex(symbol):
+	symbol.reTag()
+	texExpr=''
+	if symbol.kinds[0]=='nosc':
+		texExpr+=symbol.texTag+' '
+	elif symbol.kinds[0]=='supsc':
+		texExpr+=symbol.texTag+' '
+		if hasattr(symbol,'superscripts'):
+			texExpr+='^{'
+			for member in symbol.superscripts:
+				texExpr+=getTex(member)
+			texExpr+='}'
+	elif symbol.kinds[0]=='sc':
+		texExpr+=symbol.texTag+' '
+		if hasattr(symbol,'superscripts'):
+			texExpr+='^{'
+			for member in symbol.superscripts:
+				texExpr+=getTex(member)
+			texExpr+='}'
+		if hasattr(symbol,'subscripts'):
+			texExpr+='_{'
+			for member in symbol.subscripts:
+				texExpr+=getTex(member)
+			texExpr+='}'
+	elif symbol.kinds[0]=='slik':
+		texExpr+=symbol.texTag+' '
+		if hasattr(symbol,'aboves') or hasattr(symbol,'belows'):
+			if hasattr(symbol,'belows'):
+				texExpr+='_{'
+				for member in symbol.belows:
+					texExpr+=getTex(member)
+				texExpr+='}'
+			if hasattr(symbol,'aboves'):
+				texExpr+='^{'
+				for member in symbol.aboves:
+					texExpr+=getTex(member)
+				texExpr+='}'
+		if hasattr(symbol,'containing'):
+			for member in symbol.containing:
+				texExpr+=getTex(member)
+	elif symbol.kinds[0]=='llik':
+		texExpr+=symbol.texTag+' '
+		if hasattr(symbol,'belows'):
+			texExpr+='_{'
+			for member in symbol.belows:
+				texExpr+=getTex(member)
+			texExpr+='}'
+		if hasattr(symbol,'superscripts'):
+			texExpr+='^{'
+			for member in symbol.superscripts:
+				texExpr+=getTex(member)
+			texExpr+='}'
+	elif symbol.kinds[0]=='rlik':
+		texExpr+=symbol.texTag+' '
+		if hasattr(symbol,'aboves'):
+			texExpr+='['
+			for member in symbol.aboves:
+				texExpr+=getTex(member)
+			texExpr+=']'
+		if hasattr(symbol,'containing'):
+			texExpr+='{'
+			for member in symbol.containing:
+				texExpr+=getTex(member)
+			texExpr+='}'
+		if hasattr(symbol,'superscripts'):
+			texExpr+='^{'
+			for member in symbol.superscripts:
+				texExpr+=getTex(member)
+			texExpr+='}'
+	elif symbol.kinds[0]=='blik':
+		texExpr+=symbol.texTag+' '
+		texExpr+='{'
+		if hasattr(symbol,'aboves'):
+			for member in symbol.aboves:
+				texExpr+=getTex(member)
+		texExpr+='}'
+		texExpr+='{'
+		if hasattr(symbol,'belows'):
+			for member in symbol.belows:
+				texExpr+=getTex(member)
+		texExpr+='}'
+	return texExpr
