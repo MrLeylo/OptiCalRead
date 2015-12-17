@@ -14,6 +14,7 @@ from pprint import pprint
 import elasticMatching as eM
 import pytemplate as temp
 import featurePonderation as fp
+import pyStructural as stru
 
 #Sistema sencer, llegeix nom del fitxer inkml a analitzar i retorna l'expressio (ex: overAll.py fitxerAClassificar.inkml)
 
@@ -38,7 +39,13 @@ for onlySym in genTags:
 			del tagClassification[genTags[onlySym][i][0]]
 			del averages[genTags[onlySym][i][0]]
 weights=fp.ponderateByConcentration()		#Aplica una ponderacio per concentracio a les features
+foundTags=[]
 for i in range(len(Symb)):		#Per cada simbol a analitzar li assigna un caracter
 	decision=eM.elasticMatching(averages,Symb[i],weights)
 	print decision
+	foundTags.append(decision)
+dominations,laTexExpr=stru.expreBuilder(Symb,foundTags)
+print laTexExpr
+plt.figure(6)
+plt.text(0,0.5,'$%s$'%laTexExpr,fontsize=30)
 plt.show()

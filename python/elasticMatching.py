@@ -52,8 +52,8 @@ def elasticMatching(charTemplates,symbolToRec,weights):
 	#print [math.sqrt(len(tagClassification[reference[i]])) for i in range(len(cost))]
 	
 	
-	#cost=[((0.5*(costCoord[i]/50))+(0.05*(costLP[i]/max(costLP)))+(0.05*(costtAngle[i]/max(costtAngle)))+(0.05*costtAD[i]/(50*2*math.pi))+(0.05*costliS[i]/max(costliS))+(0.05*costaA[i]/(symbolToRec.tE.shape[0]*2*math.pi))+(0.025*costqE[i]/max(costqE))+(0.025*costrSL[i]/max(costrSL))+(0.1*costcog[i]/symbolToRec.tE.shape[0])+(0.1*coststyle[i])) for i in range(len(cost))]
-	cost=[((weights['Coord']*(costCoord[i]/50))+(weights['LP']*(costLP[i]/max(costLP)))+(weights['turningAngle']*(costtAngle[i]/max(costtAngle)))+(weights['turningAngleDifference']*costtAD[i]/(50*2*math.pi))+(weights['liS']*costliS[i]/max(costliS))+(weights['accAngle']*costaA[i]/(symbolToRec.tE.shape[0]*2*math.pi))+(weights['quadraticError']*costqE[i]/max(costqE))+(weights['relStrokeLength']*costrSL[i]/max(costrSL))+(weights['coG']*costcog[i]/symbolToRec.tE.shape[0])+(weights['Style']*coststyle[i])) for i in range(len(cost))]
+	cost=[((0.5*(costCoord[i]/50))+(0.05*(costLP[i]/max(costLP)))+(0.05*(costtAngle[i]/max(costtAngle)))+(0.05*costtAD[i]/(50*2*math.pi))+(0.05*costliS[i]/max(costliS))+(0.05*costaA[i]/(symbolToRec.tE.shape[0]*2*math.pi))+(0.025*costqE[i]/max(costqE))+(0.025*costrSL[i]/max(costrSL))+(0.1*costcog[i]/symbolToRec.tE.shape[0])+(0.1*coststyle[i])) for i in range(len(cost))]
+	#AQUEST ES EL PONDERAT ----->cost=[((weights['Coord']*(costCoord[i]/50))+(weights['LP']*(costLP[i]/max(costLP)))+(weights['turningAngle']*(costtAngle[i]/max(costtAngle)))+(weights['turningAngleDifference']*costtAD[i]/(50*2*math.pi))+(weights['liS']*costliS[i]/max(costliS))+(weights['accAngle']*costaA[i]/(symbolToRec.tE.shape[0]*2*math.pi))+(weights['quadraticError']*costqE[i]/max(costqE))+(weights['relStrokeLength']*costrSL[i]/max(costrSL))+(weights['coG']*costcog[i]/symbolToRec.tE.shape[0])+(weights['Style']*coststyle[i])) for i in range(len(cost))]
 	
 	
 	

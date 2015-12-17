@@ -6,7 +6,7 @@ import SClass as nsi
 def expreBuilder(symbols,tag):
 	auxL=zip(symbols,tag)
 	zs=sorted(auxL,key=lambda x: x[0].bBox[0])
-	symbols,tag=map(list,zip(*zs))
+	symbols,tag=map(list,zip(*zs))	
 	#symbolTypeCatalog={'nonscripted':[['+','-','x','X','\\'+'times','/','=','\\'+'neq','\gt','\geq','\lt','\leq','\ldots','.','COMMA','!','\exists','\in','\\'+'forall','\\'+'rightarrow','(','[','\{','\infty']],'superscripted':[['\sin','\cos','\\'+'tan','\log','e','\pi'],['0','1','2','3','4','5','6','7','8','9']],'scripted':[['a','c','e','i','m','n','r','x','z','A','B','C','F','X','Y','\\'+'alpha','\\'+'beta','\gamma','\\'+'theta','\phi','\pm',')',']','\}','\\'+'times'],['b','d','f','k','t'],['g','j','p','y']],'sumlike':[['\sum','\pi','\\'+'int']],'limlike':[['\lim']],'rootlike':[['\sqrt']],'barlike':[['\div']]}
 	symbolTypeCatalog={'nonscripted':[['+','-','\\'+'times','/','=','\\'+'neq','\gt','\geq','\lt','\leq','\ldots','.','COMMA','!','\exists','\in','\\'+'forall','\\'+'rightarrow','(','[','\{','\infty']],'superscripted':[['\sin','\cos','\\'+'tan','\log','e','\pi'],['0','1','2','3','4','5','6','7','8','9']],'scripted':[['a','c','e','i','m','n','r','x','z','A','B','C','F','X','Y','\\'+'alpha','\\'+'beta','\gamma','\\'+'theta','\phi','\pm',')',']','\}'],['b','d','f','k','t','\\'+'int'],['g','j','p','y']],'sumlike':[['\sum','\pi']],'limlike':[['\lim']],'rootlike':[['\sqrt']],'barlike':[['\div']]}
 	for sNum in range(len(symbols)):
@@ -37,6 +37,23 @@ def expreBuilder(symbols,tag):
 			elif tag[sNum][:-1] in [v2 for vy in symbolTypeCatalog['barlike'] for v2 in vy]:
 				symbols[sNum].setRegions('blik','cent')
 			print symbols[sNum].kinds
+	#Casos especials
+	for inspected in symbols:
+		if inspected.tag[:-1]=='-':
+			hasAbove=False
+			hasBelow=False
+			for s in symbols:
+				if s.ref!=inspected.ref and s.centroid[0]>inspected.bBox[0] and s.centroid[0]<inspected.bBox[1]:
+					if s.centroid[1]<inspected.centroid[1]:
+						hasAbove=True
+						print s.ref,'Above????????????????????????????'
+					else:
+						hasBelow=True
+						print s.ref,'Below????????????????????????????'
+			if hasAbove and hasBelow:
+				inspected.tag='\div'+inspected.tag[-1:]
+				inspected.setRegions('blik','cent')
+	print symbols[sNum].kinds		
 	for symbol in symbols:
 		if symbol.tag[:-1]=='-':
 			symbol.bBox[2]=symbol.center[1]-((symbol.bBox[1]-symbol.bBox[0])/2)
@@ -80,7 +97,7 @@ def expreBuilder(symbols,tag):
 					elif symbols[candSNum].centroid[0]>symbols[curSNum].bBox[0] and symbols[candSNum].centroid[0]<symbols[curSNum].bBox[1] and symbols[candSNum].centroid[1]>symbols[curSNum].bBox[2] and symbols[candSNum].centroid[1]<symbols[curSNum].bBox[3]:
 						dominations.append(dom.hardDomination('inside',symbols[curSNum],symbols[candSNum]))
 	print [[do.dominant.tag[:-1],do.dominant.ref,do.submissive.tag[:-1],do.submissive.ref,do.typedom] for do in dominations]
-	print symbols[4].bBox[2],symbols[4].bBox[3],symbols[4].bBox[1],symbols[6].centroid
+	#print symbols[4].bBox[2],symbols[4].bBox[3],symbols[4].bBox[1],symbols[6].centroid
 	for curSNum in range(len(symbols)):
 		noSoft=True
 		canGoOn=True
@@ -460,10 +477,14 @@ def getTex(symbol):
 		if hasattr(symbol,'aboves'):
 			for member in symbol.aboves:
 				texExpr+=getTex(member)
+		else:
+			texExpr+='?'
 		texExpr+='}'
 		texExpr+='{'
 		if hasattr(symbol,'belows'):
 			for member in symbol.belows:
 				texExpr+=getTex(member)
+		else:
+			texExpr+='?'
 		texExpr+='}'
 	return texExpr
