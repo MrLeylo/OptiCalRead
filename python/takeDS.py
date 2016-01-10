@@ -3,6 +3,8 @@ import SClass as nsi
 import numpy as np
 import matplotlib.pyplot as plt
 
+#MountDS:torna la base de dades de l'arxiu de nom name si se li especifica UNIPEN a whichdB
+
 def mountDS(name,whichdB):
 	if whichdB=='UNIPEN':
 		fileTags=open(name,"r")

@@ -23,6 +23,7 @@ def i2t(filenom):
 	linea="o"
 	file=open(filenom,"r")
 	print filenom
+	print 'Reading file..........'
 	coordinates=np.array([[[]]], np.float64)
 	contador=0
 	# Llegeix les linies del fitxer fins que acaben
@@ -80,7 +81,7 @@ def i2t(filenom):
 	file.close()
 	return coordinates
 	
-#
+#i2trained:genera els simbols etiquetats de la base de dades de filenom
 
 def i2trained(filenom,etiq):
 	linea="o"

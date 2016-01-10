@@ -7,7 +7,10 @@ import drawTraces
 import fileSeg
 import drawRegions
 import matplotlib.pyplot as plt
-test=4
+
+#Script per provar pyStructural amb casos ben etiquetats
+
+test=5
 if test==1:
 	testCase=[nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0]),nsi.Symbol([0,0],[0])]
 	testCase[0].bBox=[0.75,4,1,3.5]

@@ -5,6 +5,7 @@ import numpy as np
 
 
 def drawS(symbols):
+	print 'Setting attributes..........'
 	for i in range(len(symbols)):
 		symbols[i].draw()
 	#Representa

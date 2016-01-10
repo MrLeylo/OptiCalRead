@@ -9,6 +9,8 @@ import os
 import copy
 from pprint import pprint
 
+#Script per comparar les features entre 2 casos
+
 symboldB,tagClassification,average=temp.readTemplate()
 genTags={}
 for character in tagClassification:

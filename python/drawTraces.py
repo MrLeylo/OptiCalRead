@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 
 def draw(coordinates):
 	#Escaneja la matriu i representa la imatge
-	plt.figure(1)
+	fig=plt.figure(1)
+	fig.canvas.set_window_title('Input')
 	for i in range(coordinates.shape[0]):
 		if[0,0] in coordinates[i]:
 			indexos=np.where(coordinates[i]==[0,0])
@@ -15,6 +16,7 @@ def draw(coordinates):
 					coordinates[i,indexos[0][j],indexos[1]]=coordinates[i,indexos[0][0]-1,indexos[1]]
 		lineP,=plt.plot(coordinates[i,range(coordinates.shape[1]),0],-coordinates[i,range(coordinates.shape[1]),1],'-')
 	#Busquem la x i la y maximes de la imatge total, mirant totes les coordenades de la matriu
+	print 'Initializing segmentation..........'
 	listcoordinates=coordinates.tolist()
 	x=[]
 	y=[]
@@ -28,6 +30,4 @@ def draw(coordinates):
 	for i in range(len(x)):
 		imatge[(50*(y[i]-min(y))/difY)-1, (500*(x[i]-min(x))/difX)-1] = 1
 	img=Image.fromarray(imatge*255)
-	plt.figure(2)
-	plt.imshow(img)
 	return img,[x,y],[difX,difY]

@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 import pytemplate as temp
 import symbolPreprocessing as spp
-#from pprint import pprint
 import numpy as np
 import matplotlib.pyplot as plt
+
+#Script per inspeccionar algun simbol de la base de dades
 
 symboldB,tagClassification,averages=temp.readTemplate()
 colors=['g-','b-','y-','r-']
 lletra='\ldots3'
-#print tagClassification[lletra][1].Coord
-#print tagClassification[lletra][1].tE
 fig=plt.figure(0)
 for cara in averages:
 	print cara

@@ -3,6 +3,8 @@
 import pytemplate as temp
 import featurePonderation as fP
 
+#Script per guardar les concentracions de les diferents features
+
 symboldB,tagClassification,averages=temp.readTemplate()
 genTags={}		#Busca el significat independent de cada caracter i si la proporcio del caracter respecte el significat independent es molt baixa ho considera soroll i elimina el caracter
 for character in tagClassification:

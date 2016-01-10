@@ -33,8 +33,11 @@ def readUNIPENdB(location):
 			tagClassification[symbol.tag].append(symbol)
 		print type(tagClassification)
 	return psdB,tagClassification
+
+#ReadCROHMEdB: Llegeix la base de dades de text i la torna en forma de variables, on locationList es un string amb la ruta a la base de dades
 		
 def readCROHMEdB(locationList):
+	#Fa una llista amb els arxius a extreure la base de dades i ho ordena al sistema
 	sdB=[]
 	tagClassification={}
 	os.remove('toTrain.txt')
@@ -56,6 +59,7 @@ def readCROHMEdB(locationList):
 				shutil.rmtree('segmentedData/'+'Folder000'+str(lcont))
 			os.makedirs('segmentedData/'+'Folder000'+str(lcont))
 			sg.main(['GO',linea,'segmentedData/'+'Folder000'+str(lcont)+'/trainFile'])
+	#Escaneja els arxius de la base de dades i guarda les coordenades
 	for cases in os.listdir('segmentedData'):
 		filesHere=sorted(os.listdir('segmentedData/'+cases))
 		filesHere.remove('trainFile_GT.txt')
@@ -70,6 +74,7 @@ def readCROHMEdB(locationList):
 				etiq=linea[whereInd+1:].rstrip('\n')
 				sdB.append(ink2Traces.i2trained('segmentedData/'+cases+'/'+filesHere[filco],etiq))
 				filco+=1
+	#Preprocessa i troba els atributs dels simbols de la base de dades
 	for symbol in sdB:
 		symbol.draw()
 	psdB=spp.preprocessing(sdB)
@@ -79,13 +84,3 @@ def readCROHMEdB(locationList):
 			tagClassification[symbol.tag]=[]
 		tagClassification[symbol.tag].append(symbol)
 	return psdB,tagClassification
-		#for symbol in sdB:
-		#	symbol.draw()
-		#psdB=spp.preprocessing(sdB)
-		#for symbol in psdB:
-		#	symbol.computeFeatures()
-		#	if symbol.tag not in tagClassification:
-		#		tagClassification[symbol.tag]=[]
-		#	tagClassification[symbol.tag].append(symbol)
-		#print type(tagClassification)
-	#return psdB,tagClassification

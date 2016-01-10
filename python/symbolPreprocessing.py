@@ -4,32 +4,39 @@ import numpy as np
 from skimage.measure import approximate_polygon as polyapx
 from pprint import pprint
 
-#preprocessing:aplica totes les tecniques de preprocessat sobre symbols, on symbols es un numpy array de 3 dimensions, bboxes es un numpy array de 2 dimensions amb les 4 coordenades de les bounding box de cada simbol, i centers es un numpy array de 2 dimensions amb les 2 coordenades dels centres de cada simbol
+#preprocessing:aplica totes les tecniques de preprocessat sobre symbols, on symbols es una llista d'elements de la classe simbol
 
 
 def preprocessing(symbols):
+	print 'Initializing symbol preprocessing..........'
 	symbols=noiseReduction(symbols)
 	symbols=normalization(symbols)
+	print 'Preprocessing complete.'
 	return symbols
 
+#noiseReduction: elimina punts, variacions locals molt petites i terminacions molt tancades i simplifica la forma, on symbols es una llista d'elements de la classe simbol
 
 def noiseReduction(symbols):
+	print 'Reducing noise.....(1/2)'
 	symbols=pointDeleting(symbols)
 	symbols=smoothing(symbols)
 	symbols=pointClustering(symbols)
 	symbols=dehooking(symbols)
 	symbols=polyAproximation(symbols)
 	symbols=pointDeleting(symbols)
-	symbols=arcLengthResampling(symbols,50)
 	return symbols
+
+#normalization: normalitza els punts mostrejats de la forma, la direccio i ordre de les traces i el tamany i posicio del simbol i limita el nombre de traces, on symbols es una llista d'elements de la classe simbol 
+
 def normalization(symbols):
+	print 'Normalizing.....(2/2)'	
+	symbols=arcLengthResampling(symbols,50)
 	symbols=strokeDirOrder(symbols)
 	symbols=strokeReduction(symbols,3,False)
 	symbols=sizeNorm(symbols)
 	return symbols
 
-#smoothing: pondera els punts dels simbols amb els punts veins i retorna els simbols ponderats, on simbols es un numpy array de 3 dimensions 
-
+#pointDeleting:elimina les traces que consisteixen en un punt, on symbols es una llista d'elements de la classe simbol
 
 def pointDeleting(symbols):
 	for i in range(len(symbols)):
@@ -40,14 +47,18 @@ def pointDeleting(symbols):
 				ini=-1
 			else:
 				ini=int(symbols[i].tE[ja-1])
+			#Elimina quan les traces nomes tenen una coordenada o quan la seva longitud es 0
 			if symbols[i].tE[ja]-ini==1 or (lcomp(symbols[i].Coord,int(symbols[i].tE[ja])+1)-lcomp(symbols[i].Coord,ini+2))==0:
 				act+=1
+				#Elimina el marcador i les coordenades del trace i actualitza els marcadors
 				symbols[i].Coord=np.delete(symbols[i].Coord,[jr for jr in range(ini+1,int(symbols[i].tE[ja])+1)],0)
 				retro=symbols[i].tE[ja]-ini
 				symbols[i].tE=np.delete(symbols[i].tE,ja,0)
 				for k in range(ja,symbols[i].tE.shape[0]):
 					symbols[i].tE[k]-=retro
 	return symbols
+
+#smoothing: pondera els punts dels simbols amb els punts veins i retorna els simbols ponderats, on symbols es una llista d'elements de la classe simbol
 
 def smoothing(symbols):
 	newSymbols=[[[]]]
@@ -76,7 +87,7 @@ def smoothing(symbols):
 		symbols[i].Coord=np.asarray(newSymbols[i+1])
 	return symbols
 	
-#pointClustering: recalcula els punts dels simbols com la mitjana dels punts en un radi, on simbols es un numpy array de 3 dimensions
+#pointClustering: recalcula els punts dels simbols com la mitjana dels punts en un radi, on symbols es una llista d'elements de la classe simbol
 
 	
 def pointClustering(symbols):
@@ -131,10 +142,8 @@ def pointClustering(symbols):
 		symbols[i].Coord=np.asarray(symbolsClust[i])
 	return symbols
 	
-#dehooking: elimina els "hooks" en els extrems dels simbols, simbols es un numpy array de 3 dimensions 
+#dehooking: elimina els "hooks" en els extrems dels simbols, on symbols es una llista d'elements de la classe simbol
 
-
-	
 def dehooking(symbols):
 	alpha=0.12
 	angleThP=(17/36)*math.pi
@@ -185,7 +194,7 @@ def dehooking(symbols):
 		symbols[i].Coord=newCoord
 	return symbols
 	
-#polyAproximation: retorna simbols amb una aproximacio poligonal de tolerancia que depen del tamany de la bounding box, on symbols es un numpy array de 3 dimensions i bB es un numpy array de 2 dimensions que conte les 4 coordenades de la bounding box de cada simbol
+#polyAproximation: retorna simbols amb una aproximacio poligonal de tolerancia que depen del tamany de la bounding box, on symbols es una llista d'elements de la classe simbol
 
 
 def polyAproximation(symbols):
@@ -204,10 +213,7 @@ def polyAproximation(symbols):
 		symbols[i].tE=ntE
 	return symbols
 	
-#def arcLengthResampling: retorna els simbols dividits en el numero de punts especificat en npoints, on simbols es un numpy array de 3 dimensions i npoints es un enter
-
-
-
+#def arcLengthResampling: retorna els simbols dividits en el numero de punts especificat en npoints, on symbols es una llista d'elements de la classe simbol i npoints es un enter
 
 def arcLengthResampling(symbols,npoints):
 	#Per cada simbol calcula la longitud i la longitud on trobara cada punt en el que dividira el poligon (en vc)
@@ -229,7 +235,6 @@ def arcLengthResampling(symbols,npoints):
 			L=lcomp(symbols[i].Coord,int(symbols[i].tE[ik])+1)-lcomp(symbols[i].Coord,iniD+2)
 			prt=L/(relat-1)
 			vc=[v*prt for v in range(relat)]
-			#curSymbol=np.zeros([relat,2],np.float64)
 			crt=0
 			unlock=0
 			#Per cada punt (j) mirara si te punts de la nova divisio anteriors(crt), si els te els buscara i els afegeix a curSymbol
@@ -256,21 +261,16 @@ def arcLengthResampling(symbols,npoints):
 		del curSymbol
 	return symbols
 	
-	
+#altArcLengthResampling: retorna els simbols dividits per traces segons especifica eachStroke, on symbols es una llista d'elements de la classe simbol i eachStroke es una llista amb els punts a cada trace
 	
 def altArcLengthResampling(symbols,eachStroke):
 	for i in range(len(symbols)):
-		#print i
-		#print symbols[i].Coord
-		#print symbols[i].Coord.shape[0]
-		#print symbols[i].tE
-		if symbols[i].tE.shape[0]!=len(eachStroke):
-			print i
 		for j in range(len(eachStroke)):
 			curSymbol=np.zeros([symbols[i].Coord.shape[0],2],np.float64)
 			gcrt=0
 			L=0
 			Lg=0
+			#Ajusta cada trace entre els punts marcats per eachStroke
 			for ik in range(symbols[i].tE.shape[0]):
 				if ik==0:
 					ini=-1
@@ -282,7 +282,6 @@ def altArcLengthResampling(symbols,eachStroke):
 				L=lcomp(symbols[i].Coord,int(symbols[i].tE[ik])+1)-lcomp(symbols[i].Coord,iniD+2)
 				prt=L/(relat-1)
 				vc=[v*prt for v in range(relat)]
-				#curSymbol=np.zeros([relat,2],np.float64)
 				crt=0
 				unlock=0
 				#Per cada punt (j) mirara si te punts de la nova divisio anteriors(crt), si els te els buscara i els afegeix a curSymbol
@@ -311,56 +310,43 @@ def altArcLengthResampling(symbols,eachStroke):
 			
 		
 
-#strokeDirOrder:retorna els simbols amb l'ordre normalitzat (si detecta que esta invers ho inverteix) i una llista que conte els tipus de cada simbol, on symbols es un numpy array de 3 dimensions i bboxes es un numpy array de 2 dimensions amb les 4 coordenades de les bounding box de cada simbol
+#strokeDirOrder:retorna els simbols amb l'ordre normalitzat (si detecta que esta invers ho inverteix) i una llista que conte els tipus de cada simbol, on symbols es una llista d'elements de la classe simbol
 
 	
 def strokeDirOrder(symbols):
-	symType=[]
 	deltha=0.5
-	#Per cada simbol mira quin tipus es i si veu que segons el tipus esta invertit, ho inverteix
 	for i in range(len(symbols)):
+		#Busca l'estil de cada simbol
 		rx=math.fabs(symbols[i].Coord[symbols[i].Coord.shape[0]-1,0]-symbols[i].Coord[0,0])
 		ry=math.fabs(symbols[i].Coord[symbols[i].Coord.shape[0]-1,1]-symbols[i].Coord[0,1])
 		diag=math.sqrt(((symbols[i].bBox[1]-symbols[i].bBox[0])**2)+((symbols[i].bBox[3]-symbols[i].bBox[2])**2))
 		rax,ray=rx/diag,ry/diag
 		if rax>deltha and ray<deltha:
 			symbols[i].Style='horizontal'
-			if symbols[i].Coord[symbols[i].Coord.shape[0]-1,0]<symbols[i].Coord[0,0]:
-				symbols[i].Coord=np.flipud(symbols[i].Coord)
-				ntE=[]
-				for ik in range(symbols[i].tE.shape[0]):
-					ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1]-symbols[i].tE[symbols[i].tE.shape[0]-ik-1]-1)
-				del ntE[0]
-				ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1])
-				symbols[i].tE=np.asarray(ntE)
 		elif rax>deltha and ray>deltha:
 			symbols[i].Style='diagonal'
-			if symbols[i].Coord[symbols[i].Coord.shape[0]-1,1]<symbols[i].Coord[0,1]:
-				symbols[i].Coord=np.flipud(symbols[i].Coord)
-				ntE=[]
-				for ik in range(symbols[i].tE.shape[0]):
-					ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1]-symbols[i].tE[symbols[i].tE.shape[0]-ik-1]-1)
-				del ntE[0]
-				ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1])
-				symbols[i].tE=np.asarray(ntE)
 		elif rax<deltha and ray>deltha:
 			symbols[i].Style='vertical'
-			if symbols[i].Coord[symbols[i].Coord.shape[0]-1,1]>symbols[i].Coord[0,1]:
-				symbols[i].Coord=np.flipud(symbols[i].Coord)
-				ntE=[]
-				for ik in range(symbols[i].tE.shape[0]):
-					ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1]-symbols[i].tE[symbols[i].tE.shape[0]-ik-1]-1)
-				del ntE[0]
-				ntE.append(symbols[i].tE[symbols[i].tE.shape[0]-1])
-				symbols[i].tE=np.asarray(ntE)
 		else:
 			symbols[i].Style='closed'
-		#Falta completar quan simbols com a objectes de classe simbol
+		for j in range(symbols[i].tE.shape[0]):
+			if j==0:
+				ini=-1
+			else:
+				ini=int(symbols[i].tE[j-1])
+			#Segons l'estil de cada trace assigna la seva direccio
+			rx=math.fabs(symbols[i].Coord[symbols[i].tE[j],0]-symbols[i].Coord[ini+1,0])
+			ry=math.fabs(symbols[i].Coord[symbols[i].tE[j],1]-symbols[i].Coord[ini+1,1])
+			diag=math.sqrt(((max([symbols[i].Coord[k,0] for k in range(ini+1,int(symbols[i].tE[j]+1))])-min([symbols[i].Coord[k,0] for k in range(ini+1,int(symbols[i].tE[j]+1))]))**2)+((max([symbols[i].Coord[k,1] for k in range(ini+1,int(symbols[i].tE[j]+1))])-min([symbols[i].Coord[k,1] for k in range(ini+1,int(symbols[i].tE[j]+1))]))**2))
+			rax,ray=rx/diag,ry/diag
+			if (rax>deltha and symbols[i].Coord[ini+1,0]>symbols[i].Coord[symbols[i].tE[j],0]) or (rax<deltha and ray>deltha and symbols[i].Coord[ini+1,1]>symbols[i].Coord[symbols[i].tE[j],1]):
+				symbols[i].Coord[range(ini+1,int(symbols[i].tE[j]+1))]=np.flipud(symbols[i].Coord[range(ini+1,int(symbols[i].tE[j]+1))])
+		#Mira l'angle del final de cada trace amb la horitzontal superior de la bounding box i ordena els traces de mes tancat a mes obert 
 		finals=np.zeros([symbols[i].tE.shape[0],2],np.float64)
 		angle=np.zeros([symbols[i].tE.shape[0]],np.float64)
 		for j in range(symbols[i].tE.shape[0]):
 			finals[j]=symbols[i].Coord[symbols[i].tE[j]]
-			angle[j]=math.acos((finals[j,0]-symbols[i].bBox[0])/(math.sqrt(((finals[j,0]-symbols[i].bBox[0])**2)+((finals[j,1]-symbols[i].bBox[2])**2))))
+			angle[j]=math.acos((finals[j,0]-symbols[i].bBox[0])/float(math.sqrt(((finals[j,0]-symbols[i].bBox[0])**2)+((finals[j,1]-symbols[i].bBox[2])**2))))
 		ordre=np.argsort(angle)
 		co=0
 		nu=np.zeros([symbols[i].Coord.shape[0],2],np.float64)
@@ -371,7 +357,7 @@ def strokeDirOrder(symbols):
 			else:
 				iu=symbols[i].tE[ordre[j]-1]
 			nu[range(co,co+int(symbols[i].tE[ordre[j]])-int(iu))]=symbols[i].Coord[range(int(iu)+1,int(symbols[i].tE[ordre[j]])+1)]
-			co=co+int(symbols[i].tE[ordre[j]])-int(iu)
+			co+=int(symbols[i].tE[ordre[j]])-int(iu)
 			if j==0:
 				ido=-1
 			else:
@@ -380,8 +366,10 @@ def strokeDirOrder(symbols):
 		symbols[i].tE=ndotE
 		symbols[i].Coord=nu
 		del finals
-		del angle
+		del angle	
 	return symbols
+	
+#strokeReduction: limita el nombre de traces a l'especificat a nStrokes, i si se li indica a adapted (es un boolean) tambe adapta a aquest nombre els simbols amb menys traces, on symbols es una llista d'elements de la classe simbol i nStrokes un enter
 	
 def strokeReduction(symbols,nStrokes,adaptation):
 	for i in range(len(symbols)):
@@ -396,13 +384,11 @@ def strokeReduction(symbols,nStrokes,adaptation):
 	return symbols
 
 #sizeNorm: retorna els simbols normalitzats desde el centre menys 1 fins al centre mes 1, on simbols es un numpy array de 3 dimensions, bboxes es un numpy array de 2 dimensions amb les 4 coordenades de les bounding box de cada simbol, i centers es un numpy array de 2 dimensions amb les 2 coordenades dels centres de cada simbol
-
 		
 def sizeNorm(symbols):
 	#Per cada simbol busca la nova posicio dels seus punts, desdel mateix centre i normalitzat entre 1 i -1
 	for i in range(len(symbols)):
 		for j in range(symbols[i].Coord.shape[0]):
-			#symbols[i].Coord[j]=symbols[i].center+((symbols[i].Coord[j]-symbols[i].center)*(1/(symbols[i].center-symbols[i].bBox[[0,2]])))
 			if symbols[i].bBox[0]==symbols[i].bBox[1]:
 				symbols[i].Coord[j,0]=0
 			else:
@@ -426,7 +412,7 @@ def lcomp(symbol,index):
 		L=d
 	return L
 	
-	
+#dista: Torna la distancia entre el segment entre (x1,y1) i (x2,y2)	i el punt (x3,y3), on x1, y1, x2, y2, x3 i y3 son floats
 	
 def dista(x1,y1, x2,y2, x3,y3):
 		px = x2-x1

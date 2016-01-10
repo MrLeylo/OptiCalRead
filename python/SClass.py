@@ -3,15 +3,15 @@ import numpy as np
 import symbolPreprocessing as spp
 import math
 
+#Symbol: Classe general per simbols sense etiquetar, necessita coordenades i marcadors de traces, on Coordinates es un numpy array de 2 dimensions amb les coordenades del simbol i traceEnds son els marcadors dels punts on finalitzen els traces
 
 class Symbol(object):
-	def __init__(self, Coordinates, traceEnds):#, bBox, center):
+	def __init__(self, Coordinates, traceEnds):
 		self.Coord =Coordinates
 		self.tE=traceEnds
 		self.Style='unknown'
-		#self.bB=[]
-		#self.center=[]
 		
+	#Draw:Segons les coordenades assigna la bounding box i en centre
 		
 	def draw(self):
 		self.bBox=np.zeros([4],np.float64)
@@ -28,16 +28,20 @@ class Symbol(object):
 		self.center[0]=(leftBorder+rightBorder)/2
 		self.center[1]=(upBorder+downBorder)/2
 		
+	#ComputeFeatures:calcula les features a analitzar del simbol
+	
 	def computeFeatures(self):
 		self.localFeatures()
 		self.globalFeatures()
 		
+	#LocalFeatures:features referents a cada punt
 		
 	def localFeatures(self):
 		self.compTurning()
 		self.compTurnDif()
 		self.lengthPosition()
 	
+	#GlobalFeatures:features referents a les traces
 	
 	def globalFeatures(self):
 		self.centerOfGravity()
@@ -46,17 +50,20 @@ class Symbol(object):
 		self.accumAngle()
 		self.compQE()
 	
+	#CompTurning:Guarda l'angle del segment que surt de cada punt respecte la horitzontal, assignant l'ultim angle en cada trace sempre com PI
 	
 	def compTurning(self):
 		self.turningAngle=np.zeros([self.Coord.shape[0]],np.float64)
 		for j in range(self.Coord.shape[0]-1):
 			self.turningAngle[j]=math.acos((self.Coord[j+1,0]-self.Coord[j,0])/math.sqrt(((self.Coord[j+1,0]-self.Coord[j,0])**2)+((self.Coord[j+1,1]-self.Coord[j,1])**2)))
+			#Si l'angle es major de 
 			if self.Coord[j+1,1]>self.Coord[j,1]:
 				self.turningAngle[j]=-self.turningAngle[j]
 			if j in self.tE:
 				self.turningAngle[j]=math.pi
 		self.turningAngle[self.Coord.shape[0]-1]=math.pi
 	
+	#CompTurnDif:Guarda l'angle entre els segments incidents en cada punt, i en l'ultim assigna 0
 	
 	def compTurnDif(self):
 		self.turningAngleDifference=np.zeros([self.Coord.shape[0]],np.float64)
@@ -66,6 +73,7 @@ class Symbol(object):
 				self.turningAngleDifference[j]=0
 		self.turningAngleDifference[self.Coord.shape[0]-1]=0
 	
+	#LengthPosition: Guarda la posicio relativa a 1 respecte el recorregut sencer del simbol de cada punt
 	
 	def lengthPosition(self):
 		self.LP=np.zeros([self.Coord.shape[0]],np.float64)
@@ -88,6 +96,7 @@ class Symbol(object):
 				self.LP[j]=Lr/L
 			Lan=Lr
 	
+	#CenterOfGravity: Guarda el centre de gravetat (mitjana dels punts) de cada trace
 	
 	def centerOfGravity(self):
 		self.coG=np.zeros([self.tE.shape[0],2],np.float64)
@@ -105,6 +114,7 @@ class Symbol(object):
 			self.coG[i,0]=div[0]
 			self.coG[i,1]=div[1]
 	
+	#LengthInStroke:Guarda la longitud de cada trace
 	
 	def lengthInStroke(self):
 		self.liS=np.zeros([self.tE.shape[0]],np.float64)
@@ -113,6 +123,8 @@ class Symbol(object):
 			acDi=spp.lcomp(self.Coord,int(self.tE[i]+1))
 			self.liS[i]=acDi-anteriors
 			anteriors=acDi
+	
+	#RelativeStrokeLength: Guarda la longitud de cada trace respecte la longitud total
 	
 	def relativeStrokeLength(self):
 		self.relStrokeLength=np.zeros([self.tE.shape[0]],np.float64)
@@ -123,6 +135,7 @@ class Symbol(object):
 				ini=int(self.tE[i-1])
 			self.relStrokeLength[i]=math.sqrt(((self.Coord[self.tE[i],0]-self.Coord[ini+1,0])**2)+((self.Coord[self.tE[i],1]-self.Coord[ini+1,1])**2))/self.liS[i]
 	
+	#AccumAngle: Guarda l'angle dels extrems de cada trace
 	
 	def accumAngle(self):
 		self.accAngle=np.zeros([self.tE.shape[0]],np.float64)
@@ -136,6 +149,7 @@ class Symbol(object):
 				suma=suma+self.turningAngle[j]
 			self.accAngle[i]=suma/(2*math.pi)
 	
+	#CompQE: Guarda l'error quadratic respecte els extrems en cada trace
 	
 	def compQE(self):
 		self.quadraticError=np.zeros([self.tE.shape[0]],np.float64)
@@ -150,7 +164,7 @@ class Symbol(object):
 				suma=suma+(di**2)
 			self.quadraticError[i]=suma/(self.tE[i]-ini)
 			
-	
+	#SetRegions: Assigna les regions de cada simbol segons el tipus 
 	
 	def setRegions(self,scKind,projKind):
 		width=self.bBox[1]-self.bBox[0]
@@ -184,6 +198,7 @@ class Symbol(object):
 			self.subThresh=sub
 		elif scKind=='llik':
 			self.rightOut=self.outbBox[1]+(1.5*width)
+			self.superThresh=sup
 			self.subThresh=sub
 		elif scKind=='rlik':
 			self.rightOut=self.outbBox[1]+(1.5*width)
@@ -191,25 +206,39 @@ class Symbol(object):
 		elif scKind=='blik':
 			self.rightOut=self.outbBox[1]+(1.5*width)
 		self.kinds=[scKind,projKind]
+	
+	#AddSupsc:Afegeix un superscript
 		
 	def addSupsc(self,slist):
 		self.superscripts=slist
 		
+	#AddSubsc:Afegeix un subscript
+		
 	def addSubsc(self,slist):
 		self.subscripts=slist
+		
+	#AddAbove:Afegeix un superior
 		
 	def addAb(self,slist):
 		self.aboves=slist
 		
+	#AddSupsc:Afegeix un inferior
+		
 	def addBe(self,slist):
 		self.belows=slist
+		
+	#AddSupsc:Afegeix un contingut
 		
 	def addIns(self,slist):
 		self.containing=slist	
 	
+	#AddSupsc:Etiqueta un simbol amb l'etiqueta de tag i la referencia de sNum, on tag es un string i sNum un enter
+		
 	def tagUntagged(self,tag,sNum):
 		self.tag=tag
 		self.ref=sNum
+	
+	#ReTag:Adapta l'etiqueta per ser comprensible per Tex
 		
 	def reTag(self):
 		if self.tag[:-1]=='\div':
@@ -218,7 +247,7 @@ class Symbol(object):
 			self.texTag='\colon'
 		elif self.tag[:-1]=='.':
 			self.texTag='\cdotp'
-		elif self.tag[:-1]=='\COMMA':
+		elif self.tag[:-1]=='COMMA':
 			self.texTag=','
 		elif self.tag[:-1]=='\!':
 			self.texTag='!'

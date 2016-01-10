@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+#Repr:representa els simbols de la llista symbols
+
 def repr(symbols):
 	plt.figure(4)
 	colors=['g-','b-','y-','r-']

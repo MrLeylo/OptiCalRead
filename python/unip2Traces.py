@@ -1,4 +1,5 @@
 
+#u2t:llegeix la base de dades UNIPEN i retorna les coordenades dels nous simbols
 
 def u2t(filenom):
 	file=open(filenom,"r")

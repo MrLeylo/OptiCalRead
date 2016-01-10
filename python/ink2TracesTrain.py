@@ -29,7 +29,7 @@ def search4Trace(linea,whichTrace, condition):
 				return False
 	return
 
-#Llegeix el fitxer indicat per filenom i torna les coordenades extretes (matriu de tres dimensions, equivalent a trace, punt, i eix de coordenades (x i y))
+#Llegeix el fitxer d'entrenament indicat per filenom i torna les coordenades extretes (matriu de tres dimensions, equivalent a trace, punt, i eix de coordenades (x i y))
 	
 def i2t(filenom):
 	linea="o"
@@ -90,6 +90,7 @@ def i2t(filenom):
 				for j in range(2):
 					coordinates[coordinates.shape[0]-1,i,j]=coordinatesAr[c]
 					c=c+1
+		#Reparteix les coordenades en traces depenent del que digui l'arxiu
 		ident=0
 		elif isTraceGroupIn:
 			if linea.count('<traceGroup')>1:

@@ -2,6 +2,8 @@
 import pytemplate as temp
 import matplotlib.pyplot as plt
 
+#Script per actualitzar els simbols i els templates segons la base de dades i representar els templates
+
 temp.templateGenerator()
 symboldB,tagClassification,averages=temp.readTemplate()
 genTags={}		#Busca el significat independent de cada caracter i si la proporcio del caracter respecte el significat independent es molt baixa ho considera soroll i elimina el caracter

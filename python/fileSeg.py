@@ -65,6 +65,7 @@ def segment(coordinates,byAxis,difs):
 			nS=nS+1
 		else:
 			disc=disc-1
+	print 'Traces grouped as'
 	print qS
 	#Representa i agrupa les traces en simbols
 	cc=0
@@ -91,7 +92,9 @@ def segment(coordinates,byAxis,difs):
 		tends[tends.shape[0]-1]=symCoordinates.shape[0]-1
 		nsi=SClass.Symbol(symCoordinates,tends)
 		simbols.append(nsi)
-	plt.figure(3)
+	print 'Data segmented.'
+	fig=plt.figure(2)
+	fig.canvas.set_window_title('Regions')
 	for i in range(len(simbols)):
 		for j in range(simbols[i].tE.shape[0]):
 			if j==0:
